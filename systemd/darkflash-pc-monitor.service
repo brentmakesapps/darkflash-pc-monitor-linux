@@ -5,7 +5,9 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/Work/dark-flash-pc-monitor-linux/.venv/bin/darkflash-pc-monitor render
+EnvironmentFile=%h/.config/darkflash-pc-monitor/service.env
+ExecStart=/usr/bin/env ${DARKFLASH_PC_MONITOR} render
+ExecStopPost=/usr/bin/env ${DARKFLASH_PC_MONITOR} blank
 Restart=on-failure
 RestartSec=3
 

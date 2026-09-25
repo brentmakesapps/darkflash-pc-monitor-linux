@@ -1,7 +1,7 @@
 [project]
 name = "dark-flash-pc-monitor"
 version = "0.1.0"
-description = "Native Linux telemetry for DarkFlash PC Monitor displays"
+description = "Native Linux telemetry renderer for the DarkFlash L280 PC Monitor display"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"

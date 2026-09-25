@@ -1,0 +1,15 @@
+[Unit]
+Description=DarkFlash PC Monitor native telemetry display for %i
+After=local-fs.target
+
+[Service]
+Type=simple
+User=%i
+EnvironmentFile=/etc/darkflash-pc-monitor/%i.conf
+ExecStart=/usr/bin/env ${DARKFLASH_PC_MONITOR} render
+ExecStopPost=/usr/bin/env ${DARKFLASH_PC_MONITOR} blank
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
