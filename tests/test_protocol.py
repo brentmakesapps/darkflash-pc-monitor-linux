@@ -3,6 +3,7 @@ from darkflash_pc_monitor.protocol import (
     REPORT_ID,
     SETUP_BANK,
     ZERO_TEMPERATURE_BANK,
+    temperature_frame,
     zero_temperature_frame,
 )
 
@@ -16,3 +17,12 @@ def test_zero_temperature_frame_matches_observed_report_shape() -> None:
     assert frame[3] == CONTROLLER_TYPE
     assert frame[25 : 25 + len(SETUP_BANK)] == SETUP_BANK
     assert frame[41 : 41 + len(ZERO_TEMPERATURE_BANK)] == ZERO_TEMPERATURE_BANK
+    assert frame[54:57] == b"\0\0\0"
+
+
+def test_temperature_frame_renders_cpu_left_and_gpu_right() -> None:
+    frame = temperature_frame(42, 57, 0xA6)
+
+    assert frame[41:54] == bytes(
+        [0x10, 0x04, 0x26, 0x00, 0x12, 0x02, 0x14, 0x02, 0x36, 0x00, 0x26, 0x04, 0x14]
+    )

@@ -11,12 +11,12 @@ vendor application. The project currently provides:
 - safe discovery of the `5131:2007` display HID node;
 - live CPU package and selectable Intel Xe GPU temperature discovery;
 - a CLI suitable for a bar-widget dropdown or user service;
-- a replay probe for the observed CPU/GPU `0°C` screen frame;
+- a native TM1721 CPU/GPU temperature-page renderer;
 - protocol fixtures and tests derived from locally observed HID traffic.
 
-The remaining work is translating the vendor TM1721 digit renderer into an
-original native encoder. Until that encoder is complete, leave PC Monitor as
-the active writer; two programs must not write to the same HID node at once.
+The native renderer currently supports the observed CPU-left/GPU-right
+temperature page. Do not run PC Monitor at the same time: two programs must
+not write to the same HID node.
 
 ## Install for development
 
@@ -46,6 +46,40 @@ darkflash-pc-monitor probe --confirm
 ```
 
 Close PC Monitor first. The display permits only one writer at a time.
+
+## Render live temperatures
+
+Render the CPU package temperature and a selected Intel Xe GPU continuously:
+
+```bash
+darkflash-pc-monitor render --gpu xe-pci-0400
+```
+
+Use `--once` to test one live frame and `--interval <seconds>` to change the
+default one-second refresh cadence.
+
+## Persist a GPU selection and run at login
+
+Select any GPU listed by `list-gpus`; the renderer and user service use this
+persisted selection when no `--gpu` flag is provided:
+
+```bash
+darkflash-pc-monitor set-gpu --gpu xe-pci-0400
+```
+
+The included `systemd/darkflash-pc-monitor.service` is configured for this
+repository's development virtual environment. Copy it into the user service
+directory and enable it:
+
+```bash
+mkdir -p ~/.config/systemd/user
+cp systemd/darkflash-pc-monitor.service ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now darkflash-pc-monitor.service
+```
+
+If the repository is checked out somewhere other than `~/Work`, change the
+`ExecStart` path before enabling the service.
 
 ## Hardware access
 

@@ -1,0 +1,13 @@
+[Unit]
+Description=DarkFlash PC Monitor native telemetry display
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/Work/dark-flash-pc-monitor-linux/.venv/bin/darkflash-pc-monitor render
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
