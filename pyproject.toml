@@ -1,0 +1,24 @@
+[project]
+name = "dark-flash-pc-monitor"
+version = "0.1.0"
+description = "Native Linux telemetry for DarkFlash PC Monitor displays"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+darkflash-pc-monitor = "darkflash_pc_monitor.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
