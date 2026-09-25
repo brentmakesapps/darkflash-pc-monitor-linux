@@ -6,10 +6,22 @@ import argparse
 import json
 import time
 
-from .config import save_selected_gpu, selected_gpu
+from .config import (
+    save_selected_gpu,
+    save_selected_mode,
+    selected_gpu,
+    selected_mode,
+)
 from .hid import HidDisplay, find_display
 from .protocol import temperature_frame, zero_temperature_frame
-from .telemetry import TelemetryError, discover_gpus, read_telemetry, sensors_snapshot
+from .telemetry import (
+    TelemetryError,
+    discover_gpus,
+    read_telemetry,
+    read_utilization_snapshot,
+    sensors_snapshot,
+    utilization_between,
+)
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -27,6 +39,9 @@ def _parser() -> argparse.ArgumentParser:
     set_gpu = subcommands.add_parser("set-gpu", help="select the GPU used by the native service")
     set_gpu.add_argument("--gpu", required=True, help="Intel Xe GPU temperature source")
     subcommands.add_parser("selected-gpu", help="print the persisted GPU selection")
+    set_mode = subcommands.add_parser("set-mode", help="select the display page")
+    set_mode.add_argument("--mode", choices=("temperature", "utilization"), required=True)
+    subcommands.add_parser("selected-mode", help="print the persisted display page")
     return parser
 
 
@@ -61,6 +76,12 @@ def main() -> None:
                 raise SystemExit(f"GPU {args.gpu!r} was not found; available: {choices}")
             save_selected_gpu(args.gpu)
             return
+        if args.command == "selected-mode":
+            print(selected_mode())
+            return
+        if args.command == "set-mode":
+            save_selected_mode(args.mode)
+            return
         if args.command == "probe":
             if not args.confirm:
                 raise SystemExit("probe writes to the display; re-run with --confirm")
@@ -74,12 +95,25 @@ def main() -> None:
             raise SystemExit("no GPU is selected; pass --gpu or run set-gpu --gpu <chip>")
         with HidDisplay(find_display()) as display:
             sequence = 0
+            utilization_snapshot = None
             while True:
-                telemetry = read_telemetry(gpu)
+                if selected_mode() == "utilization":
+                    next_snapshot = read_utilization_snapshot(gpu)
+                    if utilization_snapshot is None:
+                        cpu_value = gpu_value = 0
+                    else:
+                        utilization = utilization_between(utilization_snapshot, next_snapshot)
+                        cpu_value = round(utilization.cpu_percent)
+                        gpu_value = round(utilization.gpu_percent)
+                    utilization_snapshot = next_snapshot
+                else:
+                    telemetry = read_telemetry(gpu)
+                    cpu_value = round(telemetry.cpu_temperature_c)
+                    gpu_value = round(telemetry.gpu.temperature_c)
                 display.write(
                     temperature_frame(
-                        round(telemetry.cpu_temperature_c),
-                        round(telemetry.gpu.temperature_c),
+                        cpu_value,
+                        gpu_value,
                         sequence,
                     )
                 )

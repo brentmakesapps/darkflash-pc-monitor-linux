@@ -15,8 +15,8 @@ vendor application. The project currently provides:
 - protocol fixtures and tests derived from locally observed HID traffic.
 
 The native renderer currently supports the observed CPU-left/GPU-right
-temperature page. Do not run PC Monitor at the same time: two programs must
-not write to the same HID node.
+temperature and utilization pages. Do not run PC Monitor at the same time:
+two programs must not write to the same HID node.
 
 ## Install for development
 
@@ -57,6 +57,19 @@ darkflash-pc-monitor render --gpu xe-pci-0400
 
 Use `--once` to test one live frame and `--interval <seconds>` to change the
 default one-second refresh cadence.
+
+## Utilization page
+
+Switch to the CPU/GPU utilization page with:
+
+```bash
+darkflash-pc-monitor set-mode --mode utilization
+```
+
+The left value is aggregate CPU busy time from `/proc/stat`. The right value
+is the selected Intel Xe GPU's aggregate engine busy time from its DRM
+per-client counters. Both values are percentages sampled over the renderer's
+refresh interval. Use `set-mode --mode temperature` to return to temperatures.
 
 ## Persist a GPU selection and run at login
 
