@@ -2,7 +2,7 @@
 
 A native Linux replacement for the Windows **PC Monitor** application used by
 the small segmented display integrated into the
-[DarkFlash L280](https://darkflash.com/products/darkflash-l280) PC case.
+[DarkFlash L280](https://www.darkflash.com/product/l280) PC case.
 
 The case display is a USB HID device, not a conventional monitor. This project
 reads local CPU and Intel Xe GPU telemetry and writes the display directly,
