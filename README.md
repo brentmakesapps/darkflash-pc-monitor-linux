@@ -176,3 +176,7 @@ the system service: two concurrent renderers will conflict over the HID device.
 | `src/darkflash_pc_monitor/config.py` | Atomic preference persistence |
 | `systemd/` | User and system service templates |
 | `tests/` | Protocol, telemetry, configuration, and CLI tests |
+
+## License
+
+Licensed under the [GNU General Public License v3.0 only](LICENSE).
